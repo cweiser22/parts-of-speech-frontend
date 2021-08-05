@@ -79,16 +79,45 @@ function App() {
 
   // function to be called whenever the input text changes
   function handleChange(e: React.ChangeEvent<HTMLTextAreaElement>){
+
+    // invalidate the current data
+    setValid(false);
+
+    // cancel old timeout
     if (typingTimeout){
       clearTimeout(typingTimeout)
     }
 
+    // update inputText
     setInputText(e.target.value);
-    setTypingTimeout(setTimeout(() => setValid(false), 1000))
+
+    // set new timeout
+    setTypingTimeout(setTimeout(() => updatePOSData(), 1000))
 
   }
 
-  useEffect(()=>{
+  async function updatePOSData(){
+    // do not make a request if all input text has been deleted. just use defaultData
+    if (!inputText){
+      setPos(defaultData)
+      return;
+    }
+    try{
+      // fetch new POS from server
+      const newData = await requestPOS(inputText!);
+
+      // set new data
+      setPos(newData);
+
+      // revalidate
+      setValid(true);
+    } catch(e){
+      // display error if anything went wrong
+      setError(true);
+    }
+  }
+
+  /*useEffect(()=>{
     async function updatePOSData(){
       try{
         const newData = await requestPOS(inputText!);
@@ -101,7 +130,7 @@ function App() {
     if (!valid){
       updatePOSData();
     }
-  }, [valid])
+  }, [valid])*/
   
 
   return (

@@ -1,6 +1,7 @@
 import React from 'react'
 import Tile from './Tile'
 import { POSDocumentData } from '../types'
+import LoadingDisplay from '../LoadingDisplay';
 
 interface Props{
     valid: boolean;
@@ -8,7 +9,7 @@ interface Props{
 }
 
 function DataDisplay({valid, data}: Props){
-    return !valid ? <h1>validating</h1> : (
+    return !valid ? <LoadingDisplay/> : (
         <figure className="p-8 border rounded bg-white h-full block divide-y">
             <div className=" grid grid-cols-2">
             <Tile count={data.adjectives.length} name="Adjectives"/>
