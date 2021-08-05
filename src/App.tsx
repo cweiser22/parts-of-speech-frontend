@@ -2,40 +2,14 @@ import React from 'react';
 import NavBar from './NavBar';
 import TextInput from './TextInput';
 import DataDisplay from './DataDisplay/DataDisplay';
-import useSWR from 'swr';
 import ErrorDisplay from './ErrorDisplay';
 import { POSResponse, POSState } from './types';
 import { useState } from 'react';
-import { useEffect } from 'react';
+import {requestPOS} from "./api";
 
-
-const POS_URL = 'http://localhost:8080/pos';
 
 // function to handle getting POS data
-async function requestPOS(text: string): Promise<POSResponse>{
 
-  // format required by the POS API
-  const body = {
-    values: [
-      {
-        recordId: 'a1',
-        data: {
-          text,
-          language: 'en'
-        }
-      }
-    ]
-  }
-
-  // TODO: remove this when finished
-  console.log(JSON.stringify(body))
-
-  // make request
-  const res = await fetch(POS_URL, {method: 'POST', body: JSON.stringify(body), headers:{'Content-Type':'application/json'}});
-
-  // return request body
-  return await res.json() as POSResponse;
-}
 
 //data to use when app first loads
 const defaultData: POSResponse = {
@@ -99,7 +73,9 @@ function App() {
   async function updatePOSData(){
     // do not make a request if all input text has been deleted. just use defaultData
     if (!inputText){
-      setPos(defaultData)
+      console.log("Blank")
+      setPos(defaultData);
+      setValid(true);
       return;
     }
     try{
@@ -117,20 +93,6 @@ function App() {
     }
   }
 
-  /*useEffect(()=>{
-    async function updatePOSData(){
-      try{
-        const newData = await requestPOS(inputText!);
-        setPos(newData);
-        setValid(true);
-      } catch(e){
-        setError(true);
-      }
-    }
-    if (!valid){
-      updatePOSData();
-    }
-  }, [valid])*/
   
 
   return (
