@@ -1,8 +1,9 @@
 import React from 'react';
 import NavBar from './NavBar';
 import TextInput from './TextInput';
-import DataDisplay from './DataDisplay';
+import DataDisplay from './DataDisplay/DataDisplay';
 import useSWR from 'swr';
+import ErrorDisplay from './ErrorDisplay';
 import { POSResponse, POSState } from './types';
 import { useState } from 'react';
 import { useEffect } from 'react';
@@ -10,7 +11,10 @@ import { useEffect } from 'react';
 
 const POS_URL = 'http://localhost:8080/pos';
 
+// function to handle getting POS data
 async function requestPOS(text: string): Promise<POSResponse>{
+
+  // format required by the POS API
   const body = {
     values: [
       {
@@ -22,11 +26,18 @@ async function requestPOS(text: string): Promise<POSResponse>{
       }
     ]
   }
+
+  // TODO: remove this when finished
   console.log(JSON.stringify(body))
+
+  // make request
   const res = await fetch(POS_URL, {method: 'POST', body: JSON.stringify(body), headers:{'Content-Type':'application/json'}});
+
+  // return request body
   return await res.json() as POSResponse;
 }
 
+//data to use when app first loads
 const defaultData: POSResponse = {
   values: [
     {
@@ -55,24 +66,36 @@ function App() {
   const [valid, setValid] = useState<boolean>(true);
 
   // POS data
-  const [data, setData] = useState<POSResponse>(defaultData);
+  const [pos, setPos] = useState<POSResponse>(defaultData);
 
+  // whether or not the request failed
+  // specific errors are not displayed, we need only know whether an error happened or not
+  const [error, setError] = useState<boolean>(false);
+
+  // keeps track of text inputted
   const [inputText, setInputText] = useState<string>();
 
+  const [typingTimeout, setTypingTimeout] = useState<any>(0);
+
+  // function to be called whenever the input text changes
   function handleChange(e: React.ChangeEvent<HTMLTextAreaElement>){
-    clearTimeout(timer);
+    if (typingTimeout){
+      clearTimeout(typingTimeout)
+    }
+
     setInputText(e.target.value);
-    setTimeout(() => setValid(false), 3000);
+    setTypingTimeout(setTimeout(() => setValid(false), 1000))
+
   }
 
   useEffect(()=>{
     async function updatePOSData(){
       try{
         const newData = await requestPOS(inputText!);
-        setData(newData);
+        setPos(newData);
         setValid(true);
       } catch(e){
-
+        setError(true);
       }
     }
     if (!valid){
@@ -93,7 +116,7 @@ function App() {
               <TextInput onChange={handleChange}/>
             </div>
             <div className="col-span-1">
-              <DataDisplay valid={valid} data={data?.values[0].data}/>
+              {error ? <ErrorDisplay/> : <DataDisplay valid={valid} data={pos?.values[0].data}/>}
             </div>
           </div>
         </div>
