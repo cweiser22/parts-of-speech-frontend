@@ -17,5 +17,5 @@ This repo contains the frontend for the project.
 
 ## Status
 
-This project is not yet complete. The code is currently very messy and may not function properly.
+This project is not yet complete. As of now, it should be functional but is rough around the edges visually and may break in edge cases.
 
