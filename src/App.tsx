@@ -32,8 +32,6 @@ const defaultData: POSResponse = {
   ]
 }
 
-let timer = setTimeout(()=>{}, 10000);
-
 function App() {
 
   // keeps track of whether POS data needs to be or is being refreshed
@@ -47,23 +45,23 @@ function App() {
   const [error, setError] = useState<boolean>(false);
 
   // keeps track of text inputted
-  const [inputText, setInputText] = useState<string>();
+  const [inputText, setInputText] = useState<string>('');
 
   const [typingTimeout, setTypingTimeout] = useState<any>(0);
 
   // function to be called whenever the input text changes
-  function handleChange(e: React.ChangeEvent<HTMLTextAreaElement>){
+  function updateInputText(s: string){
+
+      // cancel old timeout
+      if (typingTimeout){
+        clearTimeout(typingTimeout)
+      }
 
     // invalidate the current data
     setValid(false);
 
-    // cancel old timeout
-    if (typingTimeout){
-      clearTimeout(typingTimeout)
-    }
-
     // update inputText
-    setInputText(e.target.value);
+    setInputText(s);
 
     // set new timeout
     setTypingTimeout(setTimeout(() => updatePOSData(), 1000))
@@ -72,7 +70,7 @@ function App() {
 
   async function updatePOSData(){
     // do not make a request if all input text has been deleted. just use defaultData
-    if (!inputText){
+    if (inputText == ""){
       console.log("Blank")
       setPos(defaultData);
       setValid(true);
@@ -104,7 +102,7 @@ function App() {
         <div className="md:w-3/4 mx-auto p-12">
           <div className="grid grid-cols-3 gap-4">
             <div className="col-span-2">
-              <TextInput onChange={handleChange}/>
+              <TextInput inputText={inputText!} updateInputText={updateInputText}/>
             </div>
             <div className="col-span-1">
               {error ? <ErrorDisplay/> : <DataDisplay valid={valid} data={pos?.values[0].data}/>}

@@ -2,18 +2,31 @@ import React from 'react'
 import { useState } from 'react';
 
 interface Props{
-    onChange: any;
+    updateInputText: any;
+    inputText: string;
 }
 
-function TextInput({onChange}: Props){
+function TextInput({updateInputText, inputText}: Props){
     const [wordCount, setWordCount] = useState<number>(0);
     const [charCount, setCharCount] = useState<number>(0);
 
 
     function handleChange(e: React.ChangeEvent<HTMLTextAreaElement>){
+
+        if (e.target.value.length == 0){
+            console.log(e.target.value);
+            setWordCount(0);
+            updateInputText('');
+            return;
+        }
+
+        // call handler passed down from app
+        updateInputText(e.target.value);
+
         setWordCount(e.target.value.trim().split(/\s+/).length);
         setCharCount(e.target.value.length);
-        onChange(e);
+
+
     }
 
     return (
@@ -31,8 +44,15 @@ function TextInput({onChange}: Props){
 
             <div className="h-96 p-2    ">
                 <textarea
+                   /* onKeyDown={(e) => {
+                        if (e.key == 'Backspace'){
+                            // call handler passed down from app
+                            console.log('backspace')
+                        }
+                    }}*/
+                    value={inputText}
                     onChange={handleChange}
-                    contentEditable
+                    
                     placeholder="Paste text here..."
                     className="resize-none focus:outline-none text-md text-lg h-full font-mono w-full appearance-none font-normal leading-relaxed"
                 ></textarea>
