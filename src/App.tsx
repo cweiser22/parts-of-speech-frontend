@@ -3,7 +3,7 @@ import NavBar from './NavBar';
 import TextInput from './TextInput';
 import DataDisplay from './DataDisplay/DataDisplay';
 import ErrorDisplay from './ErrorDisplay';
-import { POSResponse, POSState } from './types';
+import { POSDocumentData, POSResponse, POSState } from './types';
 import { useState } from 'react';
 import {requestPOS} from "./api";
 
@@ -12,11 +12,7 @@ import {requestPOS} from "./api";
 
 
 //data to use when app first loads
-const defaultData: POSResponse = {
-  values: [
-    {
-      recordId: 'a1',
-      data: {
+const defaultData: POSDocumentData =  {
         verbs: [],
         adjectives: [],
         adverbs: [],
@@ -28,17 +24,16 @@ const defaultData: POSResponse = {
         articles: [],
 
       }
-    }
-  ]
-}
+
 
 function App() {
 
   // keeps track of whether POS data needs to be or is being refreshed
-  const [valid, setValid] = useState<boolean>(true);
+  //const [valid, setValid] = useState<boolean>(true);
 
   // POS data
-  const [pos, setPos] = useState<POSResponse>(defaultData);
+  // either contains POS data, or null if there is no valid data
+  const [pos, setPos] = useState<POSDocumentData | null>(defaultData);
 
   // whether or not the request failed
   // specific errors are not displayed, we need only know whether an error happened or not
@@ -47,6 +42,7 @@ function App() {
   // keeps track of text inputted
   const [inputText, setInputText] = useState<string>('');
 
+  // typing timeout is used to determine when to refresh POS data
   const [typingTimeout, setTypingTimeout] = useState<any>(0);
 
   // function to be called whenever the input text changes
@@ -58,7 +54,8 @@ function App() {
       }
 
     // invalidate the current data
-    setValid(false);
+    //setValid(false);
+    setPos(null);
 
     // update inputText
     setInputText(s);
@@ -73,18 +70,18 @@ function App() {
     if (inputText == ""){
       console.log("Blank")
       setPos(defaultData);
-      setValid(true);
+      //setValid(true);
       return;
     }
     try{
       // fetch new POS from server
-      const newData = await requestPOS(inputText!);
+      const res = await requestPOS(inputText!);
 
       // set new data
-      setPos(newData);
+      setPos(res.values[0].data);
 
       // revalidate
-      setValid(true);
+      //setValid(true);
     } catch(e){
       // display error if anything went wrong
       setError(true);
@@ -105,7 +102,8 @@ function App() {
               <TextInput inputText={inputText!} updateInputText={updateInputText}/>
             </div>
             <div className="col-span-1">
-              {error ? <ErrorDisplay/> : <DataDisplay valid={valid} data={pos?.values[0].data}/>}
+   
+              {error ? <ErrorDisplay/> : <DataDisplay pos={pos}/>}
             </div>
           </div>
         </div>
