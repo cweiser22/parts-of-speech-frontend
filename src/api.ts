@@ -1,7 +1,9 @@
 import { POSResponse } from "./types";
 
-const POS_URL = 'http://localhost:8080/pos';
+// URL of the pos api, should be not hardcoded later
+const POS_URL = process.env.REACT_APP_POS_API_URL || 'http://localhost:8080/pos';
 
+// makes request to the POS api and returns the request body as an object
 export async function requestPOS(text: string): Promise<POSResponse>{
 
     // format required by the POS API
@@ -17,11 +19,11 @@ export async function requestPOS(text: string): Promise<POSResponse>{
       ]
     }
   
-    // TODO: remove this when finished
-    console.log(JSON.stringify(body))
+    // for debugging
+    console.log(`request body=${JSON.stringify(body)}`)
   
     // make request
-    const res = await fetch(POS_URL, {method: 'POST', body: JSON.stringify(body), headers:{'Content-Type':'application/json'}});
+    const res = await fetch(POS_URL!, {method: 'POST', body: JSON.stringify(body), headers:{'Content-Type':'application/json'}});
   
     // return request body
     return await res.json() as POSResponse;

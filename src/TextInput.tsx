@@ -3,24 +3,22 @@ import { useState } from 'react';
 
 interface Props{
     updateInputText: any;
-    inputText?: string;
 }
 
-function TextInput({updateInputText, inputText}: Props){
+function TextInput({updateInputText}: Props){
     const [wordCount, setWordCount] = useState<number>(0);
     const [charCount, setCharCount] = useState<number>(0);
 
 
     function handleChange(e: React.ChangeEvent<HTMLTextAreaElement>){
 
-        if (e.target.value == ''){
-            console.log(e.target.value);
+        if (e.target.value === ''){
             setWordCount(0);
             setCharCount(0)
             updateInputText('');
             return;
         }
-        console.log(`target val: ${e.target.value}`);
+        console.log(`change event target value = ${e.target.value}`);
 
         // call handler passed down from app
         updateInputText(e.target.value);
@@ -46,13 +44,6 @@ function TextInput({updateInputText, inputText}: Props){
 
             <div className="h-96 p-2    ">
                 <textarea
-                   /* onKeyDown={(e) => {
-                        if (e.key == 'Backspace'){
-                            // call handler passed down from app
-                            console.log('backspace')
-                        }
-                    }}*/
-                   // value={inputText}
                     onChange={handleChange}
                     
                     placeholder="Paste text here..."

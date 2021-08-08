@@ -1,10 +1,9 @@
-import React from 'react'
-import Tile from './Tile'
-import { POSDocumentData } from '../types'
-import LoadingDisplay from '../LoadingDisplay';
+import React from 'react';
+import Tile from './Tile';
+import { POSDocumentData } from '../types';
+import LoadingDisplay from './LoadingDisplay';
 
 interface Props{
-
     pos: POSDocumentData | null;
 }
 
