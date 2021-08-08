@@ -13,13 +13,14 @@ function TextInput({updateInputText, inputText}: Props){
 
     function handleChange(e: React.ChangeEvent<HTMLTextAreaElement>){
 
-        if (e.target.value.length == 0){
+        if (e.target.value == ''){
             console.log(e.target.value);
             setWordCount(0);
+            setCharCount(0)
             updateInputText('');
             return;
         }
-        console.log(e.target.value);
+        console.log(`target val: ${e.target.value}`);
 
         // call handler passed down from app
         updateInputText(e.target.value);
