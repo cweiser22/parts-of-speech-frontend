@@ -40,34 +40,35 @@ function App() {
   const [error, setError] = useState<boolean>(false);
 
   // keeps track of text inputted
-  const [inputText, setInputText] = useState<string>('');
+  //const [inputText, setInputText] = useState<string>('');
 
   // typing timeout is used to determine when to refresh POS data
-  const [typingTimeout, setTypingTimeout] = useState<any>(0);
+  const [typingTimeout, setTypingTimeout] = useState<ReturnType<typeof setTimeout> | null>(null);
 
   // function to be called whenever the input text changes
   function updateInputText(s: string){
 
-      // cancel old timeout
-      if (typingTimeout){
-        clearTimeout(typingTimeout)
-      }
+    // cancel old timeout
+    if (typingTimeout){
+      clearTimeout(typingTimeout)
+    }
+    console.log(`s=${s}`)
+        // update inputText
+        //setInputText(s);
 
     // invalidate the current data
     //setValid(false);
     setPos(null);
 
-    // update inputText
-    setInputText(s);
-
     // set new timeout
-    setTypingTimeout(setTimeout(() => updatePOSData(), 1000))
+    setTypingTimeout(setTimeout(() => updatePOSData(s), 1000))
 
   }
 
-  async function updatePOSData(){
+
+  async function updatePOSData(s: string){
     // do not make a request if all input text has been deleted. just use defaultData
-    if (inputText == ""){
+    if (s == ""){
       console.log("Blank")
       setPos(defaultData);
       //setValid(true);
@@ -75,7 +76,7 @@ function App() {
     }
     try{
       // fetch new POS from server
-      const res = await requestPOS(inputText!);
+      const res = await requestPOS(s);
 
       // set new data
       setPos(res.values[0].data);
@@ -99,7 +100,7 @@ function App() {
         <div className="md:w-3/4 mx-auto p-12">
           <div className="grid grid-cols-3 gap-4">
             <div className="col-span-2">
-              <TextInput inputText={inputText!} updateInputText={updateInputText}/>
+              <TextInput  updateInputText={updateInputText}/>
             </div>
             <div className="col-span-1">
    

@@ -3,7 +3,7 @@ import { useState } from 'react';
 
 interface Props{
     updateInputText: any;
-    inputText: string;
+    inputText?: string;
 }
 
 function TextInput({updateInputText, inputText}: Props){
@@ -19,6 +19,7 @@ function TextInput({updateInputText, inputText}: Props){
             updateInputText('');
             return;
         }
+        console.log(e.target.value);
 
         // call handler passed down from app
         updateInputText(e.target.value);
@@ -50,7 +51,7 @@ function TextInput({updateInputText, inputText}: Props){
                             console.log('backspace')
                         }
                     }}*/
-                    value={inputText}
+                   // value={inputText}
                     onChange={handleChange}
                     
                     placeholder="Paste text here..."
